@@ -28,7 +28,7 @@ def load_data():
 
 
 df = load_data()
-st.title("Title")
+st.title("Brazilian Jiu-Jitsu Instructional Videos")
 st.sidebar.header("Search Config:")
 # st.subheader("Subheader")
 
@@ -56,11 +56,12 @@ else:
     text_matches = 0
 st.subheader('Filtered Options')
 st.write(df_subset[['Teacher', 'Type', 'From', 'To', 'When to use']])
-selected_indices = st.multiselect('Select rows:', df_subset.index)
+selected_indices = st.multiselect('Select 1 row:', df_subset.index)
 selected_rows = df_subset.loc[selected_indices]
-st.write('### Selected Row', selected_rows)
-
-url = selected_rows['Link'].iloc[0]
-start_time = selected_rows['Start_time'].iloc[0]
-st.write(start_time)
-st.video(url, start_time=start_time)
+st.write('### Selected video:', selected_rows[['Teacher', 'Type', 'From', 'To']])
+if selected_rows.shape[0] > 0:
+    url = selected_rows['Link'].iloc[0]
+    start_time = selected_rows['Start_time'].iloc[0]
+    st.video(url, start_time=start_time)
+else:
+    st.write('No row video selected')
