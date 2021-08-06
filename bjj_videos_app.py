@@ -26,15 +26,16 @@ def load_data():
     df['Start_time'] = df['Start_time'].fillna(0).apply(str_time_to_sec)
     return df
 
-
+st.set_page_config(layout="wide")
 df = load_data()
 st.title("Brazilian Jiu-Jitsu Instructional Videos")
-st.sidebar.header("Search Config:")
-# st.subheader("Subheader")
+c1, c2 = st.beta_columns((1, 2))
+st.sidebar.header("Search Filters:")
+
 
 radio = st.sidebar.radio('Language', ['English', 'Portuguese', 'All'])
 
-# Selection Box
+# Side Pannel---------------------------
 if radio == 'All':  
     df_subset = df.copy()
 else:
@@ -54,14 +55,22 @@ if title != 'Type any tag word':
     df_subset = df_subset[df_subset['tags'].str.contains(title)]
 else:
     text_matches = 0
-st.subheader('Filtered Options')
-st.write(df_subset[['Teacher', 'Type', 'From', 'To', 'When to use']])
-selected_indices = st.multiselect('Select 1 row:', df_subset.index)
-selected_rows = df_subset.loc[selected_indices]
-st.write('### Selected video:', selected_rows[['Teacher', 'Type', 'From', 'To']])
-if selected_rows.shape[0] > 0:
-    url = selected_rows['Link'].iloc[0]
-    start_time = selected_rows['Start_time'].iloc[0]
-    st.video(url, start_time=start_time)
-else:
-    st.write('No row video selected')
+df_subset = df_subset.reset_index(drop=True)
+
+# Main page-------------------------------
+
+# c1, c2, c3, c4 = st.beta_columns((2, 1, 1, 1))
+with c1:
+    st.subheader(f'{df_subset.shape[0]} videos found')
+    with st.beta_expander('See all results'):
+        st.table(df_subset[['Teacher', 'Type', 'From', 'To']])
+    selected_indices = st.multiselect('Select only 1 result:', df_subset.index)
+    selected_rows = df_subset.loc[selected_indices]
+    st.write('### Selected video:', selected_rows[['Teacher', 'Type', 'From', 'To']].head(1))
+with c2:
+    if selected_rows.shape[0] > 0:
+        url = selected_rows['Link'].iloc[0]
+        start_time = selected_rows['Start_time'].iloc[0]
+        st.video(url, start_time=start_time)
+    else:
+        st.write('No row video selected')
