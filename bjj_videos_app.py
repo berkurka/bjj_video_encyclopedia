@@ -73,4 +73,4 @@ with c2:
         start_time = selected_rows['Start_time'].iloc[0]
         st.video(url, start_time=start_time)
     else:
-        st.write('No row video selected')
+        st.write('No video selected')
